@@ -1,4 +1,5 @@
 import { createContext, useContext } from "react";
+import { Socket } from "socket.io-client";
 
 export interface User {
     username: string;
@@ -14,10 +15,11 @@ export interface User {
 }
 
 interface UserContextType {
-    user: User | null;
+    user: User | null | undefined; // undefined is used to indicate that the user is still loading
     login: (token: string, remember: boolean) => void;
     logout: () => void;
     fetchUser: () => Promise<void>;
+    socket: Socket | null;
 }
 
 export const UserContext = createContext<UserContextType | undefined>(undefined);

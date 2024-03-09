@@ -23,7 +23,7 @@ const Profile = () => {
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${Cookies.get('sessionToken')}`
                     }
-                });
+            });
 
                 if (!result.ok) {
                     navigate('/');

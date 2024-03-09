@@ -10,10 +10,10 @@ import PieChart from '../components/charts/PieChart';
 import History from '../components/History';
 import LineChart from '../components/charts/LineChart';
 import StatisticsChart from '../components/charts/StatisticsChart';
-import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 function Profile() {
-    const navigate = useNavigate();
+    const { username } = useParams();
     const { user, fetchUser } = useUser();
     const { openModal } = useModal();
     const [image, setImage] = useState<File | null>(null);
@@ -94,17 +94,18 @@ function Profile() {
     }, [image, fetchUser]);
 
     useEffect(() => {
-        if (!user) navigate('/');
-
         const fetchHistory = async () => {
             try {
-                const result = await apiFetch('profiles/own/history', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${Cookies.get('sessionToken')}`
+                const result = await apiFetch(
+                    `profiles/${username === user?.username ? 'own' : user?.username}/history`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${Cookies.get('sessionToken')}`
+                        }
                     }
-                });
+                );
 
                 if (!result.ok) {
                     return;
@@ -125,7 +126,7 @@ function Profile() {
         };
 
         fetchHistory();
-    }, [navigate, user]);
+    }, []);
 
     return (
         user && (

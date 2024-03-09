@@ -7,6 +7,7 @@ import ErrorPage from './pages/ErrorPage.tsx';
 import Home from './pages/Home.tsx';
 import Profile from './pages/Profile.tsx';
 import Game from './pages/Game.tsx';
+import ProtectedRoute from './components/ProtectedRoute.tsx';
 
 const router = createBrowserRouter([
     {
@@ -19,12 +20,20 @@ const router = createBrowserRouter([
                 element: <Home />
             },
             {
-                path: '/profile',
-                element: <Profile />
+                path: '/:username',
+                element: (
+                    <ProtectedRoute>
+                        <Profile />
+                    </ProtectedRoute>
+                )
             },
             {
                 path: '/play',
-                element: <Game />
+                element: (
+                    <ProtectedRoute>
+                        <Game />
+                    </ProtectedRoute>
+                )
             }
         ]
     }

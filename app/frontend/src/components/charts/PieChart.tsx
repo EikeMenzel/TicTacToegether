@@ -52,7 +52,7 @@ const PieChart: React.FC<PieChartProps> = ({ wins, losses, draws }) => {
                 ) : (
                     <div>
                         <h2 className="mb-3 whitespace-nowrap">
-                            WIN RATE: {losses === 0 ? wins : wins / losses || 0}
+                            WIN RATE: {(losses === 0 ? wins : wins / losses || 0).toFixed(2)}
                         </h2>
                         <div className="flex items-center">
                             <div className="mr-2 size-5 rounded-md bg-text"></div>

@@ -14,7 +14,7 @@ const UserProfileImage: React.FC<UserProfileImageProps> = ({ image, size, classN
             src={image}
             alt="Profile"
             style={{ height: remSize, width: remSize }}
-            className={`rounded-full object-cover bg-text ${className}`}
+            className={`rounded-full bg-text object-cover ${className}`}
         />
     ) : (
         <div

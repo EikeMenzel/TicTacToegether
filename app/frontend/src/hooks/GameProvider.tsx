@@ -1,14 +1,8 @@
 import { useEffect, useState } from 'react';
 import { GameContext } from './GameContext';
-import { io } from 'socket.io-client';
-import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
 import { useModal } from './ModalContext';
-
-const socket = io('http://localhost:3000', {
-    auth: { token: `Bearer ${Cookies.get('sessionToken')}` },
-    autoConnect: false
-});
+import { useUser } from './UserContext';
 
 export interface GameData {
     gameId: string;
@@ -30,37 +24,46 @@ export interface Board {
     nextTurn?: string;
 }
 
+const initialBoard: Board = {
+    board: [
+        ['', '', ''],
+        ['', '', ''],
+        ['', '', '']
+    ],
+    nextTurn: undefined
+};
+
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     const navigate = useNavigate();
     const { closeModal } = useModal();
     const [gameData, setGameData] = useState<GameData | undefined>();
-    const [board, setBoard] = useState<Board>({
-        board: [
-            ['', '', ''],
-            ['', '', ''],
-            ['', '', '']
-        ],
-        nextTurn: undefined
-    });
+    const { socket, fetchUser } = useUser();
+
+    const [board, setBoard] = useState(initialBoard);
     const [gameState, setGameState] = useState<GameState | undefined>();
 
     const setPiece = (x: number, y: number) => {
-        socket.emit('game.move', { gameId: gameData?.gameId, move: { x, y } });
+        socket?.emit('game.move', { gameId: gameData?.gameId, move: { x, y } });
         console.log(`Move made at (${x}, ${y}) for game ${gameData}`);
     };
 
     const joinQueue = () => {
-        socket.connect();
-        socket.emit('queue');
-        socket.on('queue', (data: { status: string; data: string }) => {
+        socket?.emit('queue');
+        socket?.on('queue', (data: { status: string; data: string }) => {
             console.log(data);
             // { status: "success", data: "Joined the queue successfully" }
         });
     };
 
     const leaveQueue = () => {
-        socket.disconnect();
-        socket.off('queue');
+        socket?.disconnect();
+        socket?.off('queue');
+    };
+
+    const resetGame = () => {
+        setBoard(initialBoard);
+        setGameData(undefined);
+        setGameState(undefined);
     };
 
     useEffect(() => {
@@ -71,7 +74,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
             closeModal();
 
             setGameData(data);
-            socket.emit('joinGameRoom', { gameId: data.gameId });
+            socket?.emit('joinGameRoom', { gameId: data.gameId });
         };
 
         const handleGameBoardUpdate = (data: { gameBoard: string[][]; nextPlayer: string }) => {
@@ -90,8 +93,9 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
                 youNewElo: gameData?.ownSymbol === 'X' ? data.newXElo : data.newOElo,
                 oppNewElo: gameData?.opponentSymbol === 'X' ? data.newXElo : data.newOElo
             });
-            socket.off('queue');
-            socket.off('match-found');
+            socket?.off('queue');
+            socket?.off('match-found');
+            fetchUser();
         };
 
         const handleGameAbort = (data: { message: string }) => {
@@ -101,26 +105,27 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
                 youNewElo: 187,
                 oppNewElo: 1337
             });
-            socket.off('queue');
-            socket.off('match-found');
+            socket?.off('queue');
+            socket?.off('match-found');
+            fetchUser();
         };
 
-        socket.on('match-found', handleMatchFound);
-        socket.on('game.gameboard', handleGameBoardUpdate);
-        socket.on('game.gameend', handleGameEnd);
-        socket.on('game.abort', handleGameAbort);
+        socket?.on('match-found', handleMatchFound);
+        socket?.on('game.gameboard', handleGameBoardUpdate);
+        socket?.on('game.gameend', handleGameEnd);
+        socket?.on('game.abort', handleGameAbort);
 
         return () => {
-            socket.off('match-found', handleMatchFound);
-            socket.off('game.gameboard', handleGameBoardUpdate);
-            socket.off('game.gameend', handleGameEnd);
-            socket.off('game.abort', handleGameAbort);
+            socket?.off('match-found', handleMatchFound);
+            socket?.off('game.gameboard', handleGameBoardUpdate);
+            socket?.off('game.gameend', handleGameEnd);
+            socket?.off('game.abort', handleGameAbort);
         };
     }, [navigate, closeModal, gameData]);
 
     return (
         <GameContext.Provider
-            value={{ joinQueue, leaveQueue, setPiece, board, gameData, gameState }}>
+            value={{ joinQueue, leaveQueue, setPiece, resetGame, board, gameData, gameState }}>
             {children}
         </GameContext.Provider>
     );

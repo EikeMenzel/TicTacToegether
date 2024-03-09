@@ -4,10 +4,24 @@ import Cookies from 'js-cookie';
 import { User, UserContext } from './UserContext';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { Socket, io } from 'socket.io-client';
 
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const navigate = useNavigate();
-    const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<User | null | undefined>(undefined);
+    const [socket, setSocket] = useState<Socket | null>(null);
+
+    const connectSocket = (sessionToken: string) => {
+        const socket = io('http://localhost:3000', {
+            auth: { token: `Bearer ${sessionToken}` }
+        });
+        setSocket(socket);
+    };
+
+    const disconnectSocket = () => {
+        socket?.disconnect();
+        setSocket(null);
+    };
 
     const login = async (token: string, remember: boolean) => {
         Cookies.set('sessionToken', token, {
@@ -15,10 +29,12 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             sameSite: 'none',
             secure: true
         });
+        connectSocket(token);
         await fetchUser();
     };
 
     const logout = () => {
+        disconnectSocket();
         Cookies.remove('sessionToken');
         setUser(null);
         navigate('/');
@@ -35,7 +51,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const data = await result.json();
 
             if (!result.ok) {
+                disconnectSocket();
                 Cookies.remove('sessionToken');
+                setUser(null);
                 return;
             }
 
@@ -64,6 +82,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             }
         } catch (err: unknown) {
             Cookies.remove('sessionToken');
+            setUser(null);
         }
     };
 
@@ -72,13 +91,21 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
         if (sessionToken) {
             fetchUser();
+            connectSocket(sessionToken);
         } else {
+            disconnectSocket();
             Cookies.remove('sessionToken');
+            setUser(null);
         }
+
+        return () => {
+            disconnectSocket();
+            setSocket(null);
+        };
     }, []); // Fetch user data only once when the component mounts
 
     return (
-        <UserContext.Provider value={{ user, login, logout, fetchUser }}>
+        <UserContext.Provider value={{ user, login, logout, fetchUser, socket }}>
             {children}
         </UserContext.Provider>
     );

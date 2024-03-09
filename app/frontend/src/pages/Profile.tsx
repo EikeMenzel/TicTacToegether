@@ -32,7 +32,6 @@ const Profile = () => {
 
                 const data = await result.json();
                 setForeignUser(data);
-                console.log("ssueceec")
             } catch (err: unknown) {
                 navigate('/');
             }

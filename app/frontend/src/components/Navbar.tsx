@@ -100,7 +100,7 @@ const Navbar: React.FC<Props> = ({ setDarkMode, darkMode }) => {
 
                     {/* Dropdown */}
                     <div
-                        className={`duration-400 fixed right-0 z-10 m-4 overflow-hidden rounded-md bg-background text-lg shadow-lg transition-[max-height] ease-in-out ${
+                        className={`duration-400 fixed right-0 z-50 m-4 overflow-hidden rounded-md bg-background text-lg shadow-lg transition-[max-height] ease-in-out ${
                             dropdownOpen ? 'max-h-[400px]' : 'max-h-0'
                         }`}
                         ref={dropdownMenu}>

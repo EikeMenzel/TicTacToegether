@@ -60,7 +60,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setUser(data);
 
             try {
-                const result = await apiFetch('profiles/own/image', {
+                const result = await apiFetch(`profiles/${data.username}/image`, {
                     method: 'GET',
                     headers: {
                         Authorization: `Bearer ${Cookies.get('sessionToken')}`

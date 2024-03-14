@@ -17,7 +17,9 @@ import { Public } from '../decorators/Public';
 import { ValidationExceptionFilter } from '../filters/validation-exception/validation-exception.filter';
 import { JwtHelperService } from '../services/jwt-helper/jwt-helper.service';
 import {UserEloRatingService as UserEloRatingServiceDatabase } from "../../database/services/user-elo-rating/user-elo-rating.service";
+import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 
+@ApiTags('Authentication')
 @Controller('api/v1')
 @UseFilters(ValidationExceptionFilter)
 export class AuthenticationController {
@@ -28,6 +30,9 @@ export class AuthenticationController {
         private jwtHelper: JwtHelperService
     ) {}
 
+    @ApiOperation({ summary: 'Register a new user' })
+    @ApiResponse({ status: HttpStatus.CREATED, description: 'User registered successfully' })
+    @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input data' })
     @Public()
     @HttpCode(HttpStatus.CREATED)
     @Post('register')
@@ -55,6 +60,9 @@ export class AuthenticationController {
         };
     }
 
+    @ApiOperation({ summary: 'Login a user' })
+    @ApiResponse({ status: HttpStatus.OK, description: 'User logged in successfully' })
+    @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Invalid credentials' })
     @Public()
     @HttpCode(HttpStatus.OK)
     @Post('login')

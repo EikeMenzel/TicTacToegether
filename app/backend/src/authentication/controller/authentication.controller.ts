@@ -18,27 +18,8 @@ import { Public } from '../decorators/Public';
 import { ValidationExceptionFilter } from '../filters/validation-exception/validation-exception.filter';
 import { JwtHelperService } from '../services/jwt-helper/jwt-helper.service';
 import {UserEloRatingService as UserEloRatingServiceDatabase } from "../../database/services/user-elo-rating/user-elo-rating.service";
-import {
-    ApiBadRequestResponse,
-    ApiBody,
-    ApiCreatedResponse, ApiOkResponse,
-    ApiTags,
-    ApiUnauthorizedResponse
-} from "@nestjs/swagger";
-import {ApiPublicOperation} from "../../custom-swagger-annotations/ApiPublicOperation";
+import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 
-
-/**
- * AuthenticationController is responsible for handling user authentication, including
- * user registration and login. It utilizes various services to perform its tasks, such as
- * `UserServiceDatabase` for user management, `UserEloRatingServiceDatabase` for managing user
- * Elo ratings, `PasswordService` for password-related operations, and `JwtHelperService` for
- * JWT token generation and validation.
- *
- * @ApiTags Decorator that associates this controller with the 'Authentication' tag in the OpenAPI documentation.
- * @Controller Decorator that declares this class as a NestJS controller with a base route of 'api/v1'.
- * @UseFilters Decorator that applies the `ValidationExceptionFilter` to all routes within the controller, to handle validation exceptions.
- */
 @ApiTags('Authentication')
 @Controller('api/v1')
 @UseFilters(ValidationExceptionFilter)
@@ -58,23 +39,9 @@ export class AuthenticationController {
         private jwtHelper: JwtHelperService
     ) {}
 
-
-    /**
-     * Handles the registration of a new user. Validates the provided user details and,
-     * if valid, creates a new user record along with an initial Elo rating. A JWT token is
-     * then generated and returned to the client.
-     *
-     * @Public Decorator that marks this method as publicly accessible, bypassing any global authentication guards.
-     * @ApiPublicOperation Decorator that provides a description for the register operation in the OpenAPI documentation.
-     * @ApiBody Decorator that specifies the expected structure of the request body.
-     * @ApiCreatedResponse Decorator that documents the successful response structure and status code.
-     * @ApiBadRequestResponse Decorator that documents the response structure and status code for bad requests.
-     * @HttpCode Decorator that sets the HTTP status code to CREATED (201) for successful requests.
-     * @Post Decorator that maps HTTP POST requests to this method.
-     *
-     * @param registerDTO - The data transfer object containing the user registration details.
-     * @returns A promise that resolves to an object containing the access token.
-     */
+    @ApiOperation({ summary: 'Register a new user' })
+    @ApiResponse({ status: HttpStatus.CREATED, description: 'User registered successfully' })
+    @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Invalid input data' })
     @Public()
     @ApiPublicOperation('Register a new user')
     @ApiBody({ type: RegisterDTO })
@@ -107,21 +74,9 @@ export class AuthenticationController {
         return new TokenResponseDTO(await this.jwtHelper.generateJWTToken(user.id));
     }
 
-    /**
-     * Handles user login. It checks the provided credentials against the stored records and,
-     * if authenticated, generates and returns a JWT token.
-     *
-     * @Public Decorator that marks this method as publicly accessible, bypassing any global authentication guards.
-     * @ApiPublicOperation Decorator that provides a description for the login operation in the OpenAPI documentation.
-     * @ApiBody Decorator that specifies the expected structure of the request body for login.
-     * @ApiOkResponse Decorator that documents the successful response structure and status code.
-     * @ApiUnauthorizedResponse Decorator that documents the response structure and status code for unauthorized requests.
-     * @HttpCode Decorator that sets the HTTP status code to OK (200) for successful login attempts.
-     * @Post Decorator that maps HTTP POST requests to this method, specifically for the 'login' route.
-     *
-     * @param loginDTO - The data transfer object containing the user login details.
-     * @returns A promise that resolves to an object containing the access token.
-     */
+    @ApiOperation({ summary: 'Login a user' })
+    @ApiResponse({ status: HttpStatus.OK, description: 'User logged in successfully' })
+    @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Invalid credentials' })
     @Public()
     @ApiPublicOperation('Login a user')
     @ApiBody({ type: LoginDTO })

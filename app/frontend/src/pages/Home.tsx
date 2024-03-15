@@ -47,7 +47,7 @@ function Home() {
                     </div>
                 </div>
                 <div className="m-4 flex items-center">
-                    <div className="mx-auto grid aspect-square w-full grid-cols-3 gap-4 md:max-h-[70vw] md:max-w-[70vw] xl:max-h-[30vw] xl:max-w-[30vw]">
+                    <div className="mx-auto grid aspect-square w-full grid-cols-3 gap-4 md:max-w-[70vw] xl:max-w-[30vw]">
                         {Array.from({ length: 9 }).map((_, i) => (
                             <div key={i} className="rounded-xl bg-secondary-400 p-6">
                                 {Math.random() > 0.5 ? (

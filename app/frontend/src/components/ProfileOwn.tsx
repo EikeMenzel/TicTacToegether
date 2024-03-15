@@ -40,7 +40,9 @@ const ProfileOwn: React.FC<ProfileOwnProps> = ({ user }) => {
         const losses = [];
         const draws = [];
 
-        for (const item of history.reverse()) {
+        history.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+        for (const item of history) {
             const { winner, timestamp } = item;
 
             if (winner === user?.username) {

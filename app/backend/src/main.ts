@@ -8,7 +8,6 @@ async function bootstrap() {
 
     const config = new DocumentBuilder()
         .setTitle('TicTacToe-API Documentation')
-        .setDescription('API for project in wbs2')
         .setVersion('1.0')
         .build();
 

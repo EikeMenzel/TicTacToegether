@@ -1,7 +1,7 @@
 import {Controller, Get, HttpStatus, UseGuards} from '@nestjs/common';
 import {IsAdminGuard} from "../../../user/guard/is-admin/is-admin.guard";
 import {AdminPanelService} from "../../services/admin-panel/admin-panel.service";
-import {ApiBearerAuth, ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiOkResponse, ApiTags} from "@nestjs/swagger";
 import {AdminQueueItemDTO} from "../../payload/AdminQueueItemDTO";
 import {AdminGameItemDTO} from "../../payload/AdminGameItemDTO";
 import {AdminApiOperation} from "../../../custom-swagger-annotations/ApiAdminOperation";

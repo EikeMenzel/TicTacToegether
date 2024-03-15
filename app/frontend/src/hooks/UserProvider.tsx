@@ -40,7 +40,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         navigate('/');
     };
 
-    const fetchUser = useCallback(async () => {
+    const fetchUser = async () => {
         try {
             const result = await apiFetch('profiles/own', {
                 method: 'GET',
@@ -84,7 +84,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             Cookies.remove('sessionToken');
             setUser(null);
         }
-    }, [disconnectSocket]);
+    };
 
     
     useEffect(() => {

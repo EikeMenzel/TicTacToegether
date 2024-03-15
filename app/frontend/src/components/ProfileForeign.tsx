@@ -25,7 +25,7 @@ const ProfileForeign: React.FC<ProfileForeignProps> = ({ user }) => {
 
     const eloOverTime = () => {
         return history.map((game) => {
-            return { x: new Date(game.timestamp), y: game.ownEloAtTimestamp };
+            return { x: game.timestamp, y: game.ownEloAtTimestamp };
         });
     };
 
@@ -37,26 +37,26 @@ const ProfileForeign: React.FC<ProfileForeignProps> = ({ user }) => {
         const losses = [];
         const draws = [];
 
+        history.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
         for (const item of history) {
             const { winner, timestamp } = item;
-            const date = new Date(timestamp);
 
             if (winner === user?.username) {
-                wins.push({ x: date, y: ++winSum });
-            } else if (winner !== user?.username) {
-                losses.push({ x: date, y: ++lossSum });
+                wins.push({ x: timestamp, y: ++winSum });
+            } else if (winner === undefined) {
+                draws.push({ x: timestamp, y: ++drawSum });
             } else {
-                draws.push({ x: date, y: ++drawSum });
+                losses.push({ x: timestamp, y: ++lossSum });
             }
         }
 
         if (history.length > 0) {
             const lastItem = history[history.length - 1];
-            const lastDate = new Date(lastItem.timestamp);
 
-            wins.push({ x: lastDate, y: winSum });
-            losses.push({ x: lastDate, y: lossSum });
-            draws.push({ x: lastDate, y: drawSum });
+            wins.push({ x: lastItem.timestamp, y: winSum });
+            losses.push({ x: lastItem.timestamp, y: lossSum });
+            draws.push({ x: lastItem.timestamp, y: drawSum });
         }
 
         return [wins, draws, losses];
@@ -98,7 +98,12 @@ const ProfileForeign: React.FC<ProfileForeignProps> = ({ user }) => {
                 }
 
                 const data = await result.json();
-                setHistory(data);
+                setHistory(
+                    data.map((item: History) => ({
+                        ...item,
+                        timestamp: new Date(item.timestamp)
+                    }))
+                );
             } catch (err: unknown) {
                 if (err instanceof Error) {
                     toast.error(err.message);

@@ -158,7 +158,17 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
     return (
         <GameContext.Provider
-            value={{ joinQueue, leaveQueue, setPiece, resetGame, board, gameData, gameState, chat, sendChat }}>
+            value={{
+                joinQueue,
+                leaveQueue,
+                setPiece,
+                resetGame,
+                board,
+                gameData,
+                gameState,
+                chat,
+                sendChat
+            }}>
             {children}
         </GameContext.Provider>
     );

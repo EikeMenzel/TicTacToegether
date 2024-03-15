@@ -38,7 +38,7 @@ const Profile = () => {
         };
 
         fetchUser();
-    });
+    }, [navigate, user?.username, username]);
 
     return username === user?.username ? (
         <ProfileOwn user={user} />

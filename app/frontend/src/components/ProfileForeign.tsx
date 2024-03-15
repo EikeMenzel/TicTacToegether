@@ -66,7 +66,10 @@ const ProfileForeign: React.FC<ProfileForeignProps> = ({ user }) => {
         const fetchImage = async () => {
             try {
                 const result = await apiFetch(`profiles/${user.username}/image`, {
-                    method: 'GET'
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Bearer ${Cookies.get('sessionToken')}`
+                    }
                 });
 
                 if (!result.ok) {
@@ -88,7 +91,6 @@ const ProfileForeign: React.FC<ProfileForeignProps> = ({ user }) => {
                 const result = await apiFetch(`profiles/${user.username}/history`, {
                     method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json',
                         Authorization: `Bearer ${Cookies.get('sessionToken')}`
                     }
                 });

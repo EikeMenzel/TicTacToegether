@@ -4,6 +4,7 @@ import { apiFetch } from '../lib/api';
 import { useUser } from '../hooks/UserContext';
 import Cookies from 'js-cookie';
 import { toast } from 'sonner';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
 const ChangePasswordModal: React.FC<ModalProps> = ({ close }) => {
     const [formData, setFormData] = useState({
@@ -14,12 +15,16 @@ const ChangePasswordModal: React.FC<ModalProps> = ({ close }) => {
             password_confirmation: ''
         }
     });
+    const [showPassword, setShowPassword] = useState({
+        password: false,
+        password_confirmation: false
+    });
     const { fetchUser } = useUser();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formTarget = e.target as HTMLFormElement;
-        
+
         if (formData.password !== formData.password_confirmation) {
             setFormData({
                 ...formData,
@@ -41,7 +46,10 @@ const ChangePasswordModal: React.FC<ModalProps> = ({ close }) => {
 
             if (!result.ok) {
                 const data = await result.json();
-                setFormData({ ...formData, error: {password: data.error.password, password_confirmation: '',} });
+                setFormData({
+                    ...formData,
+                    error: { password: data.error.password, password_confirmation: '' }
+                });
                 formTarget['new-password'].focus();
                 return;
             }
@@ -65,41 +73,80 @@ const ChangePasswordModal: React.FC<ModalProps> = ({ close }) => {
                     Password
                 </label>
                 <div className="mt-2">
-                    <input
-                        id="new-password"
-                        name="new-password"
-                        type="password"
-                        required
-                        autoComplete="new-password"
-                        autoFocus
-                        className="block w-full rounded-md border-0 p-1.5 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    />
-                    <p className="my-2 text-sm font-bold text-primary-500">{formData.error.password}</p>
+                    <div className="relative">
+                        <div
+                            onClick={() =>
+                                setShowPassword({
+                                    ...showPassword,
+                                    password: !showPassword.password
+                                })
+                            }
+                            className="absolute right-2 top-1/2 -translate-y-1/2">
+                            {showPassword.password ? (
+                                <EyeIcon className="size-6 text-black" />
+                            ) : (
+                                <EyeSlashIcon className="size-6 text-black" />
+                            )}
+                        </div>
+                        <input
+                            id="new-password"
+                            name="new-password"
+                            type={showPassword.password ? 'text' : 'password'}
+                            required
+                            autoComplete="new-password"
+                            autoFocus
+                            className="block w-full rounded-md border-0 p-1.5 pe-9 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        />
+                    </div>
+
+                    <p className="my-2 text-sm font-bold text-primary-500">
+                        {formData.error.password}
+                    </p>
                 </div>
             </div>
 
             <div>
                 <div className="flex items-center justify-between">
-                    <label htmlFor="password" className="block text-sm font-medium leading-6">
+                    <label
+                        htmlFor="confirm_password"
+                        className="block text-sm font-medium leading-6">
                         Confirm Password
                     </label>
                 </div>
                 <div className="mt-2">
-                    <input
-                        id="confirm_password"
-                        name="confirm_password"
-                        type="password"
-                        required
-                        className="block w-full rounded-md border-0 p-1.5 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-                        onChange={(e) =>
-                            setFormData({
-                                ...formData,
-                                password_confirmation: e.target.value
-                            })
-                        }
-                    />
-                    <p className="my-2 text-sm font-bold text-primary-500">{formData.error.password_confirmation}</p>
+                    <div className="relative">
+                        <div
+                            onClick={() =>
+                                setShowPassword({
+                                    ...showPassword,
+                                    password_confirmation: !showPassword.password_confirmation
+                                })
+                            }
+                            className="absolute right-2 top-1/2 -translate-y-1/2">
+                            {showPassword.password_confirmation ? (
+                                <EyeIcon className="size-6 text-black" />
+                            ) : (
+                                <EyeSlashIcon className="size-6 text-black" />
+                            )}
+                        </div>
+                        <input
+                            id="confirm_password"
+                            name="confirm_password"
+                            type={showPassword.password_confirmation ? 'text' : 'password'}
+                            required
+                            className="block w-full rounded-md border-0 p-1.5 pe-9 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    password_confirmation: e.target.value
+                                })
+                            }
+                        />
+                    </div>
+                    <p className="my-2 text-sm font-bold text-primary-500">
+                        {formData.error.password_confirmation}
+                    </p>
                 </div>
             </div>
 

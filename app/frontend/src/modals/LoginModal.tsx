@@ -3,6 +3,7 @@ import { apiFetch } from '../lib/api';
 import { useUser } from '../hooks/UserContext';
 import { ModalProps } from '../hooks/ModalProvider';
 import { toast } from 'sonner';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
 const LoginModal: React.FC<ModalProps> = ({ close }) => {
     const { login } = useUser();
@@ -12,6 +13,7 @@ const LoginModal: React.FC<ModalProps> = ({ close }) => {
         remember: false,
         error: ''
     });
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -73,15 +75,26 @@ const LoginModal: React.FC<ModalProps> = ({ close }) => {
                     </label>
                 </div>
                 <div className="mt-2">
-                    <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        autoComplete="current-password"
-                        required
-                        className="block w-full rounded-md border-0 p-1.5 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    />
+                    <div className="relative">
+                        <div
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-2 top-1/2 -translate-y-1/2">
+                            {showPassword ? (
+                                <EyeIcon className="size-6 text-black" />
+                            ) : (
+                                <EyeSlashIcon className="size-6 text-black" />
+                            )}
+                        </div>
+                        <input
+                            id="password"
+                            name="password"
+                            type={showPassword ? 'text' : 'password'}
+                            autoComplete="current-password"
+                            required
+                            className="block w-full rounded-md border-0 p-1.5 pe-9 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        />
+                    </div>
                     <p className="my-2 text-center text-sm font-bold text-primary-500">
                         {formData.error}
                     </p>

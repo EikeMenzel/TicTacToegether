@@ -3,6 +3,7 @@ import { apiFetch } from '../lib/api';
 import { useUser } from '../hooks/UserContext';
 import { ModalProps } from '../hooks/ModalProvider';
 import { toast } from 'sonner';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
 interface FormData {
     username: string;
@@ -29,6 +30,10 @@ const initalFormData: FormData = {
 const RegisterModal: React.FC<ModalProps> = ({ close }) => {
     const { login } = useUser();
     const [formData, setFormData] = useState(initalFormData);
+    const [showPassword, setShowPassword] = useState({
+        password: false,
+        password_confirmation: false
+    });
 
     const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -106,15 +111,31 @@ const RegisterModal: React.FC<ModalProps> = ({ close }) => {
                     </label>
                 </div>
                 <div className="mt-2">
-                    <input
-                        id="password"
-                        name="password"
-                        type="password"
-                        autoComplete="current-password"
-                        required
-                        className="block w-full rounded-md border-0 p-1.5 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    />
+                    <div className="relative">
+                        <div
+                            onClick={() =>
+                                setShowPassword({
+                                    ...showPassword,
+                                    password: !showPassword.password
+                                })
+                            }
+                            className="absolute right-2 top-1/2 -translate-y-1/2">
+                            {showPassword.password ? (
+                                <EyeIcon className="size-6 text-black" />
+                            ) : (
+                                <EyeSlashIcon className="size-6 text-black" />
+                            )}
+                        </div>
+                        <input
+                            id="password"
+                            name="password"
+                            type={showPassword.password ? 'text' : 'password'}
+                            autoComplete="current-password"
+                            required
+                            className="block w-full rounded-md border-0 p-1.5 pe-9 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                        />
+                    </div>
                     <p className="my-2 text-sm font-bold text-primary-500">
                         {formData.error.password}
                     </p>
@@ -128,19 +149,35 @@ const RegisterModal: React.FC<ModalProps> = ({ close }) => {
                     </label>
                 </div>
                 <div className="mt-2">
-                    <input
-                        id="confirm_password"
-                        name="confirm_password"
-                        type="password"
-                        required
-                        className="block w-full rounded-md border-0 p-1.5 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
-                        onChange={(e) =>
-                            setFormData({
-                                ...formData,
-                                password_confirmation: e.target.value
-                            })
-                        }
-                    />
+                    <div className="relative">
+                        <div
+                            onClick={() =>
+                                setShowPassword({
+                                    ...showPassword,
+                                    password_confirmation: !showPassword.password_confirmation
+                                })
+                            }
+                            className="absolute right-2 top-1/2 -translate-y-1/2">
+                            {showPassword.password_confirmation ? (
+                                <EyeIcon className="size-6 text-black" />
+                            ) : (
+                                <EyeSlashIcon className="size-6 text-black" />
+                            )}
+                        </div>
+                        <input
+                            id="confirm_password"
+                            name="confirm_password"
+                            type={showPassword.password_confirmation ? 'text' : 'password'}
+                            required
+                            className="block w-full rounded-md border-0 p-1.5 pe-9 text-black shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6"
+                            onChange={(e) =>
+                                setFormData({
+                                    ...formData,
+                                    password_confirmation: e.target.value
+                                })
+                            }
+                        />
+                    </div>
                     <p className="my-2 text-sm font-bold text-primary-500">
                         {formData.error.password_confirmation}
                     </p>

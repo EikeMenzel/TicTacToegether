@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { Board, GameData, GameState } from './GameProvider';
+import { Board, ChatData, GameData, GameState } from './GameProvider';
 
 interface GameContextProps {
     joinQueue: () => void;
@@ -9,6 +9,8 @@ interface GameContextProps {
     gameData: GameData | undefined;
     gameState: GameState | undefined;
     board: Board;
+    chat: ChatData[];
+    sendChat: (message: string) => void;
 }
 
 export const GameContext = createContext<GameContextProps | undefined>(undefined);

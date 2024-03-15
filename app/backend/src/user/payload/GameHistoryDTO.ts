@@ -1,12 +1,5 @@
 import {ApiProperty} from "@nestjs/swagger";
 
-/**
- * `GameHistoryDTO` is a data transfer object that encapsulates the details of a single game history entry,
- * including the timestamp of the game, Elo ratings at the time of the game for both the user and their opponent,
- * the opponent's username, and the winner of the game.
- *
- * @class GameHistoryDTO
- */
 export class GameHistoryDTO {
     @ApiProperty({
         example: new Date().toISOString(),

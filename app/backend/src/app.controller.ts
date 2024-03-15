@@ -3,18 +3,11 @@ import { Response } from 'express';
 import { join } from 'path';
 import { Public } from './authentication/decorators/Public';
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {ApiPublicOperation} from "./custom-swagger-annotations/ApiPublicOperation";
 
 @ApiTags('Serve Frontend')
 @Controller()
 export class AppController {
-    @ApiOperation({
-        summary: 'Serve Frontend Application',
-        description: 'Catch-all route to serve the frontend application.'
-    })
-    @ApiResponse({
-        status: 200,
-        description: 'Frontend application served successfully.'
-    })
     @Public()
     @ApiPublicOperation('Serve Frontend Application', 'Catch-all route to serve the frontend application.')
     @ApiResponse({

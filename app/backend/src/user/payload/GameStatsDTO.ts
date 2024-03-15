@@ -1,11 +1,5 @@
 import {ApiProperty} from "@nestjs/swagger";
 
-/**
- * `GameStatsDTO` is a data transfer object that summarizes the game statistics for a user, including
- * the total number of games played, the number of games won, lost, and drawn.
- *
- * @class GameStatsDTO
- */
 export class GameStatsDTO {
     @ApiProperty({ example: 25, description: 'Total number of games played by the user' })
     totalGames: number;

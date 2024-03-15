@@ -1,9 +1,13 @@
 import {Controller, Get, HttpStatus, UseGuards} from '@nestjs/common';
 import {IsAdminGuard} from "../../../user/guard/is-admin/is-admin.guard";
 import {AdminPanelService} from "../../services/admin-panel/admin-panel.service";
-import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiForbiddenResponse, ApiOkResponse, ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {AdminQueueItemDTO} from "../../payload/AdminQueueItemDTO";
+import {AdminGameItemDTO} from "../../payload/AdminGameItemDTO";
+import {AdminApiOperation} from "../../../custom-swagger-annotations/ApiAdminOperation";
 
 @ApiTags('Admin Panel')
+@ApiBearerAuth()
 @Controller('api/v1')
 @UseGuards(IsAdminGuardHttp)
 export class AdminPanelController {
@@ -16,17 +20,15 @@ export class AdminPanelController {
         private adminPanelService: AdminPanelService
     ) {}
 
-    @ApiOperation({ summary: 'Get Matchmaking Queue', description: 'Retrieves the current matchmaking queue.' })
-    @ApiResponse({ status: HttpStatus.OK, description: 'Matchmaking queue retrieved successfully.' })
-    @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'You are not allowed to query this route!' })
+    @AdminApiOperation('Get Matchmaking Queue', 'Retrieves the current matchmaking queue.')
+    @ApiOkResponse({ status: HttpStatus.OK, description: 'Matchmaking queue retrieved successfully.', type: AdminQueueItemDTO, isArray: true })
     @Get('admin/queue')
     async getMatchmakingQueue(): Promise<AdminQueueItemDTO[]> {
         return await this.adminPanelService.getMatchmakingQueue();
     }
 
-    @ApiOperation({ summary: 'Get All Games', description: 'Retrieves all games.' })
-    @ApiResponse({ status: HttpStatus.OK, description: 'All games retrieved successfully.' })
-    @ApiResponse({ status: HttpStatus.FORBIDDEN, description: 'You are not allowed to query this route!' })
+    @AdminApiOperation('Get All Games', 'Retrieves all games.')
+    @ApiOkResponse({ status: HttpStatus.OK, description: 'All games retrieved successfully.', type: AdminGameItemDTO, isArray: true })
     @Get('admin/games')
     async getGames(): Promise<AdminGameItemDTO[]> {
         return await this.adminPanelService.getAllGames();

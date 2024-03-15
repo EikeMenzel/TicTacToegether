@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { apiFetch } from '../lib/api';
 import Cookies from 'js-cookie';
 import { User, UserContext } from './UserContext';
@@ -18,10 +18,10 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setSocket(socket);
     };
 
-    const disconnectSocket = () => {
+    const disconnectSocket = useCallback(() => {
         socket?.disconnect();
         setSocket(null);
-    };
+    }, [socket]);
 
     const login = async (token: string, remember: boolean) => {
         Cookies.set('sessionToken', token, {
@@ -40,7 +40,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         navigate('/');
     };
 
-    const fetchUser = async () => {
+    const fetchUser = useCallback(async () => {
         try {
             const result = await apiFetch('profiles/own', {
                 method: 'GET',
@@ -84,7 +84,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             Cookies.remove('sessionToken');
             setUser(null);
         }
-    };
+    }, [disconnectSocket]);
 
     useEffect(() => {
         const sessionToken = Cookies.get('sessionToken');
@@ -102,7 +102,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             disconnectSocket();
             setSocket(null);
         };
-    }, []); // Fetch user data only once when the component mounts
+    }, [disconnectSocket, fetchUser]); // Fetch user data only once when the component mounts
 
     return (
         <UserContext.Provider value={{ user, login, logout, fetchUser, socket }}>

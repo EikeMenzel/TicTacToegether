@@ -14,7 +14,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, adminOnly }) 
 
     useEffect(() => {
         if (user === null || (adminOnly && !user?.isAdmin)) navigate('/');
-    }, [user]);
+    }, [user, adminOnly, navigate]);
 
     return user === undefined ? <ErrorPage /> : children;
 };

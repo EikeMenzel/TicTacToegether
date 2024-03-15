@@ -28,7 +28,7 @@ const Game = () => {
         return () => {
             resetGame();
         };
-    }, []);
+    }, [resetGame, navigate, user, gameData?.gameId]);
 
     useEffect(() => {
         if (!gameData?.opponentUsername) return;

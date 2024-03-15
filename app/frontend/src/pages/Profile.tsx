@@ -23,7 +23,7 @@ const Profile = () => {
                         'Content-Type': 'application/json',
                         Authorization: `Bearer ${Cookies.get('sessionToken')}`
                     }
-            });
+                });
 
                 if (!result.ok) {
                     navigate('/');
@@ -38,7 +38,7 @@ const Profile = () => {
         };
 
         fetchUser();
-    }, []);
+    }, [navigate, user?.username, username]);
 
     return username === user?.username ? (
         <ProfileOwn user={user} />

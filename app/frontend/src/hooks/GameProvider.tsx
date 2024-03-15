@@ -50,21 +50,19 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     const [gameState, setGameState] = useState<GameState | undefined>();
 
     const setPiece = (x: number, y: number) => {
-        socket?.emit('game.move', { gameId: gameData?.gameId, move: { x, y } });
+        socket.emit('game.move', { gameId: gameData?.gameId, move: { x, y } });
         console.log(`Move made at (${x}, ${y}) for game ${gameData}`);
     };
 
     const joinQueue = () => {
-        socket?.emit('queue');
-        socket?.on('queue', (data: { status: string; data: string }) => {
+        socket.emit('queue');
+        socket.on('queue', (data: { status: string; data: string }) => {
             console.log(data);
-            // { status: "success", data: "Joined the queue successfully" }
         });
     };
 
     const leaveQueue = () => {
-        socket?.disconnect();
-        socket?.off('queue');
+        socket.off('queue');
     };
 
     const resetGame = () => {
@@ -74,7 +72,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     const sendChat = (message: string) => {
-        socket?.emit('game.chat', { message: message });
+        socket.emit('game.chat', { message: message });
     };
 
     useEffect(() => {
@@ -93,7 +91,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
 
             setGameData(data);
             setBoard((value) => ({ ...value, nextTurn: data.startingPlayer }));
-            socket?.emit('joinGameRoom', { gameId: data.gameId });
+            socket.emit('joinGameRoom', { gameId: data.gameId });
         };
 
         const handleGameBoardUpdate = (data: { gameBoard: string[][]; nextPlayer: string }) => {
@@ -112,8 +110,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
                 youNewElo: gameData?.ownSymbol === 'X' ? data.newXElo : data.newOElo,
                 oppNewElo: gameData?.opponentSymbol === 'X' ? data.newXElo : data.newOElo
             });
-            socket?.off('queue');
-            socket?.off('match-found');
+            socket.off('queue');
+            socket.off('match-found');
             fetchUser();
         };
 
@@ -129,8 +127,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
                 youNewElo: gameData?.ownSymbol === 'X' ? data.newXElo : data.newOElo,
                 oppNewElo: gameData?.opponentSymbol === 'X' ? data.newXElo : data.newOElo
             });
-            socket?.off('queue');
-            socket?.off('match-found');
+            socket.off('queue');
+            socket.off('match-found');
             fetchUser();
         };
 
@@ -141,18 +139,18 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
             ]);
         };
 
-        socket?.on('match-found', handleMatchFound);
-        socket?.on('game.gameboard', handleGameBoardUpdate);
-        socket?.on('game.gameend', handleGameEnd);
-        socket?.on('game.abort', handleGameAbort);
-        socket?.on('game.chat', handleChatReceived);
+        socket.on('match-found', handleMatchFound);
+        socket.on('game.gameboard', handleGameBoardUpdate);
+        socket.on('game.gameend', handleGameEnd);
+        socket.on('game.abort', handleGameAbort);
+        socket.on('game.chat', handleChatReceived);
 
         return () => {
-            socket?.off('match-found', handleMatchFound);
-            socket?.off('game.gameboard', handleGameBoardUpdate);
-            socket?.off('game.gameend', handleGameEnd);
-            socket?.off('game.abort', handleGameAbort);
-            socket?.off('game.chat', handleChatReceived);
+            socket.off('match-found', handleMatchFound);
+            socket.off('game.gameboard', handleGameBoardUpdate);
+            socket.off('game.gameend', handleGameEnd);
+            socket.off('game.abort', handleGameAbort);
+            socket.off('game.chat', handleChatReceived);
         };
     }, [navigate, closeModal, gameData, socket, fetchUser]);
 

@@ -19,7 +19,7 @@ interface UserContextType {
     login: (token: string, remember: boolean) => void;
     logout: () => void;
     fetchUser: () => Promise<void>;
-    socket: Socket | null;
+    socket: Socket;
 }
 
 export const UserContext = createContext<UserContextType | undefined>(undefined);

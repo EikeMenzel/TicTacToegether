@@ -4,24 +4,22 @@ import Cookies from 'js-cookie';
 import { User, UserContext } from './UserContext';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { Socket, io } from 'socket.io-client';
+import { io } from 'socket.io-client';
+
+const socket = io('http://localhost:3000', { autoConnect: false });
 
 export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const navigate = useNavigate();
     const [user, setUser] = useState<User | null | undefined>(undefined);
-    const [socket, setSocket] = useState<Socket | null>(null);
 
     const connectSocket = (sessionToken: string) => {
-        const socket = io('http://localhost:3000', {
-            auth: { token: `Bearer ${sessionToken}` }
-        });
-        setSocket(socket);
+        socket.auth = { token: `Bearer ${sessionToken}` };
+        socket.connect();
     };
 
-    const disconnectSocket = useCallback(() => {
-        socket?.disconnect();
-        setSocket(null);
-    }, [socket]);
+    const disconnectSocket = () => {
+        socket.disconnect();
+    };
 
     const login = async (token: string, remember: boolean) => {
         Cookies.set('sessionToken', token, {
@@ -40,7 +38,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         navigate('/');
     };
 
-    const fetchUser = async () => {
+    const fetchUser = useCallback(async () => {
         try {
             const result = await apiFetch('profiles/own', {
                 method: 'GET',
@@ -51,7 +49,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const data = await result.json();
 
             if (!result.ok) {
-                // disconnectSocket();
+                disconnectSocket();
                 Cookies.remove('sessionToken');
                 setUser(null);
                 return;
@@ -84,15 +82,9 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             Cookies.remove('sessionToken');
             setUser(null);
         }
-    };
+    }, []);
 
-    
     useEffect(() => {
-        const disconnectSocket = () => {
-            socket?.disconnect();
-            setSocket(null);
-        };
-
         const sessionToken = Cookies.get('sessionToken');
 
         if (sessionToken) {
@@ -103,8 +95,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             Cookies.remove('sessionToken');
             setUser(null);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // Fetch user data only once when the component mounts
+    }, [fetchUser]);
 
     return (
         <UserContext.Provider value={{ user, login, logout, fetchUser, socket }}>

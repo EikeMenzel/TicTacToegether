@@ -113,7 +113,7 @@ const ProfileForeign: React.FC<ProfileForeignProps> = ({ user }) => {
 
         fetchImage();
         fetchHistory();
-    }, []);
+    }, [user.username]);
 
     return (
         user && (

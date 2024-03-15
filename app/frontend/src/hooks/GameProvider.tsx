@@ -154,7 +154,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
             socket?.off('game.abort', handleGameAbort);
             socket?.off('game.chat', handleChatReceived);
         };
-    }, [navigate, closeModal, gameData]);
+    }, [navigate, closeModal, gameData, socket, fetchUser]);
 
     return (
         <GameContext.Provider

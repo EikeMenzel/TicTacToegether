@@ -24,11 +24,7 @@ const Game = () => {
 
     useEffect(() => {
         if (!user || !gameData?.gameId) navigate('/');
-
-        return () => {
-            resetGame();
-        };
-    }, []);
+    }, [user, gameData?.gameId, navigate]);
 
     useEffect(() => {
         if (!gameData?.opponentUsername) return;
@@ -103,7 +99,10 @@ const Game = () => {
                             Opponent: {gameState.oppNewElo}
                         </p>
                         <button
-                            onClick={() => navigate('/')}
+                            onClick={() => {
+                                navigate('/');
+                                resetGame();
+                            }}
                             className="rounded border border-primary-500 px-3 py-2 text-3xl font-black text-text">
                             Home
                         </button>

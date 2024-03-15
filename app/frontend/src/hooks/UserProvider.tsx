@@ -51,7 +51,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             const data = await result.json();
 
             if (!result.ok) {
-                disconnectSocket();
+                // disconnectSocket();
                 Cookies.remove('sessionToken');
                 setUser(null);
                 return;
@@ -86,7 +86,13 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
     };
 
+    
     useEffect(() => {
+        const disconnectSocket = () => {
+            socket?.disconnect();
+            setSocket(null);
+        };
+
         const sessionToken = Cookies.get('sessionToken');
 
         if (sessionToken) {
@@ -97,11 +103,7 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             Cookies.remove('sessionToken');
             setUser(null);
         }
-
-        return () => {
-            disconnectSocket();
-            setSocket(null);
-        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // Fetch user data only once when the component mounts
 
     return (
